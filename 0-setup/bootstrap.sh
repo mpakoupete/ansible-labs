@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # vagrant crée par défaut sa propre paire de clés pour toutes les machines. L'authentification par mot de passe est désactivée par défaut et l'activer permet d'effectuer l'authentification par mot de passe.
 
@@ -16,6 +16,6 @@ touch /home/vagrant/.hushlogin
 # 192.168.10.22 node2.wizetraining.local node2
 # 192.168.10.23 node3.wizetraining.local node3
 
-echo -e "192.168.10.20 controller.wizetraining.local controller\n192.168.10.21 node1.wizetraining.local node1\n192.168.10.22 node2.wizetraining.local node2\n192.168.10.23 node3.wizetraining.local node3" >> /etc/hosts
+sudo echo -e "192.168.10.20 controller.wizetraining.local controller\n192.168.10.21 node1.wizetraining.local node1\n192.168.10.22 node2.wizetraining.local node2\n192.168.10.23 node3.wizetraining.local node3" >> /etc/hosts
 
 
