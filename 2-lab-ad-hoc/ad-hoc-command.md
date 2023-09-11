@@ -18,7 +18,7 @@ $ ansible node1 -m ping
 $ ansible -m ping node1
 
 # Commande à privilège
-$ ansible all -i /lab/inventory -m file -a "path=/root/ansible_test state=present" -b
+$ ansible all -i /lab/inventory -m file -a "path=/root/ansible_test state=directory" -b
 ```
 
 **Exercice 1:** Exécutez une commande sur tous les hôtes distants pour obtenir leur date et heure actuelles.
