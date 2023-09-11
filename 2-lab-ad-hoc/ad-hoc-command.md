@@ -153,12 +153,23 @@ ansible all -i /lab/inventory -m copy -a "src=/path/to/index.html dest=/var/www/
 </details>
 
 
-**Exercice 13:** Ajoutez tous les hôtes distants à un groupe nommé "web_servers" dans le fichier d'inventaire.
+**Exercice 13:** Ajoutez tous les hôtes distants `node1` & `node2` à un groupe nommé "web_servers" dans le fichier d'inventaire.
+et sur les hôtes du groupe web_servers créer un group `web_servers` pour les administrateurs.
 
 <details><summary> Correction 13:</summary>
 
+
 ```bash
-ansible all -i /lab/inventory -m group -a "name=web_servers hosts=all"
+vim /lab/inventaire
+node3
+[web_servers]
+node1
+node2
+```
+
+```bash
+ansible web_servers -m group -a "name=web_servers state=present"
+ansible web_servers -m user -a "name=admin groups=web_servers"
 ```
 
 </details>
