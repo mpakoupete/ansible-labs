@@ -168,8 +168,8 @@ node2
 ```
 
 ```bash
-ansible web_servers -m group -a "name=web_servers state=present"
-ansible web_servers -m user -a "name=admin groups=web_servers"
+ansible web_servers -m group -a "name=web_servers state=present" -b
+ansible web_servers -m user -a "name=admin groups=web_servers" -b
 ```
 
 </details>
