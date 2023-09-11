@@ -11,11 +11,11 @@ touch /home/vagrant/.hushlogin
 
 # Updating the hosts file for all the 3 nodes with the IP given in vagrantfile
 
-# 192.168.10.20 controller.wizetraining.local controller
-# 192.168.10.21 node1.wizetraining.local node1
-# 192.168.10.22 node2.wizetraining.local node2
-# 192.168.10.23 node3.wizetraining.local node3
+# 192.168.56.20 controller.wizetraining.local controller
+# 192.168.56.21 node1.wizetraining.local node1
+# 192.168.56.22 node2.wizetraining.local node2
+# 192.168.56.23 node3.wizetraining.local node3
 
-sudo echo -e "192.168.10.20 controller.wizetraining.local controller\n192.168.10.21 node1.wizetraining.local node1\n192.168.10.22 node2.wizetraining.local node2\n192.168.10.23 node3.wizetraining.local node3" >> /etc/hosts
+sudo echo -e "192.168.56.20 controller.wizetraining.local controller\n192.168.56.21 node1.wizetraining.local node1\n192.168.56.22 node2.wizetraining.local node2\n192.168.56.23 node3.wizetraining.local node3" >> /etc/hosts
 
 
