@@ -111,7 +111,7 @@ Pour l'instant créez avec la commande Ad-hoc le groupe `developpeurs`. Plus tar
 </details>
 
 
-**Exercice 5:** Créez un playbook qui copie un fichier local "index.html" vers le répertoire "/var/www/html" de tous les hôtes distants.
+**Exercice 5:** Créez un playbook qui copie un fichier local "index.html" vers le répertoire "/var/www/html" des hôtes du groupe "web_servers"..
 Créez ce fichier index qui contient un simple text html de votre choix
 
 <details><summary> Correction 5:</summary>
