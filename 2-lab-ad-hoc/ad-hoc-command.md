@@ -160,7 +160,7 @@ et sur les hôtes du groupe web_servers créer un group `web_servers` pour les a
 
 
 ```bash
-vim /lab/inventaire
+vim /lab/inventory
 node3
 [web_servers]
 node1
