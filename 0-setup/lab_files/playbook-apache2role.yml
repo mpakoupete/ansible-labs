@@ -1,0 +1,8 @@
+- hosts: web
+  become: yes
+
+  roles:
+    - /lab/roles/apache2
+   
+  tags:
+    - web

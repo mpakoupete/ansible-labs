@@ -1,0 +1,3 @@
+---
+# tasks file for /lab/roles/apache2
+- include_tasks : installation_apache2.yml

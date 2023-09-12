@@ -222,13 +222,13 @@ Nous allons à présent décomposer le précédent fichier que nous avons créé
 Nous allons créer un playbook simple qui contient un play qui déploie notre rôle sur les serveurs du groupe web:
 
 ```yaml
----
-  - hosts: web
-    become: yes
-    
-    roles:
-      - apache2
+- hosts: web
+  become: yes
 
-    tags:
-      web
+  roles:
+    - /lab/roles/apache2
+    # On peut aussi tout simplement mettre le nom du rôle étant donné que nous avons renseigné roles_path = /lab/roles 
+
+  tags:
+    - web
 ```

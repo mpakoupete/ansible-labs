@@ -1,0 +1,17 @@
+---
+- name: Suppression des paquets
+  hosts: all
+  become: yes  # Use 'become' to execute with sudo or root privileges
+
+  vars:
+    paquet_a_supprimer:
+      - nginx
+      - apache
+      - mysql-server
+
+  tasks:
+    - name: suppression de paquets
+      apt:
+        name: "{{ item }}"
+        state: absent
+      with_items: "{{ paquet_a_supprimer }}"

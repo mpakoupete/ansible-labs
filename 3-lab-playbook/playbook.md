@@ -508,3 +508,5 @@ ansible-playbook /lab/exo14.yml --vault-password-file vault_password
 ```
 
 </details>
+
+Voir le role dans le dossier roles

@@ -1,0 +1,9 @@
+- hosts: web
+  become: yes
+
+  roles:
+    - /lab/roles/apache2
+    # On peut aussi tout simplement mettre le nom du rôle étant donné que nous avons renseigné roles_path = /lab/roles 
+   
+  tags:
+    - web

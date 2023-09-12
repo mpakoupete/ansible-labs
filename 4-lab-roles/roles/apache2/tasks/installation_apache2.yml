@@ -1,0 +1,20 @@
+- name: installation apache2 dernière version
+  apt: name=apache2 state=latest
+
+- name: ecrire fichier config apache2 ports.conf
+  template:
+    src: templates/ports.conf.j2
+    dest: /etc/apache2/ports.conf
+  notify: redemarrer apache
+
+- name: fichier index.html basic
+  template:
+    src: templates/index.html.j2
+    dest: /var/www/html/index.html
+  notify:
+    - redemarrer apache
+
+- name: S'assuré que Apache est démarré
+  service:
+    name: apache2
+    state: started

@@ -1,5 +1,6 @@
-[web_servers]
+[web]
 node1
+[proxy]
 node2
-[db_servers]
+[db]
 node3
