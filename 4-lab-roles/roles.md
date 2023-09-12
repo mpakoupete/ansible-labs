@@ -194,7 +194,7 @@ Nous allons à présent décomposer le précédent fichier que nous avons créé
 ```yaml
 ---
 # tasks file for roles/apache2
-- include: installation_apache2.yml
+- include_tasks: installation_apache2.yml
 ```
 
 * Dans le répertoire `handlers`, modifiez le fichier `main.yml` pour y ajouter le handler du playbook précédemment créé
