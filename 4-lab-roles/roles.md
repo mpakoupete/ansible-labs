@@ -117,7 +117,7 @@ Créez un playbook du nom de `installation_apache2.yml` qui :
       notify:
       - redemarrer apache
 
-    - name: S'assuré que Apache est démarré
+    - name: S assuré que Apache est démarré
       ervice:
         name: apache2
         state: started
