@@ -92,7 +92,7 @@ Créez un playbook du nom de `installation_apache2.yml` qui :
 <details><summary>Correction</summary>
 
 ```yaml
-- hosts: webservers
+- hosts: web
   become: yes
 
   vars:
@@ -117,8 +117,8 @@ Créez un playbook du nom de `installation_apache2.yml` qui :
       notify:
       - redemarrer apache
 
-    - name: S assuré que Apache est démarré
-      ervice:
+    - name: S'assuré que Apache est démarré
+      service:
         name: apache2
         state: started
 ```
