@@ -1,0 +1,12 @@
+---
+- name: Exercice 9 - Déploiement de configuration
+  hosts: web_servers
+  tasks:
+    - name: créer le répertoire /etc/app
+      file:
+        path: /etc/app
+        state: directory
+    - name: Copier le fichier de configuration à partir d'un modèle
+      template:
+        src: /lab/template.j2
+        dest: /etc/app/app.conf

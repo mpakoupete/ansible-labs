@@ -150,7 +150,15 @@ Créez ce fichier index qui contient un simple text html de votre choix
 </details>
 
 
-**Exercice 7:** Créez un playbook qui redémarre le service Apache sur un groupe d'hôtes nommé "web_servers".
+**Exercice 7:** Créez un playbook qui : 
+* install Apache
+* redémarre le service Apache sur le groupe d'hôtes nommé "web_servers"
+* qui enregistre la sortie de la  tâche 2 `Redémarrer Apache` dans une variable nommée `apache_restat_output` (utilisez le plugin `register`)
+* Une troisième tâche qui affiche le code retour de cette variable (utilisez `debug`)
+
+Le playbook s'est'il exécuté correctement ?
+La Troisième tâche a t'elle pu s'exécuter ?
+Si non pourquoi ?
 
 
 <details><summary> Correction 7:</summary>
@@ -160,16 +168,62 @@ Créez ce fichier index qui contient un simple text html de votre choix
 - name: Exercice 7 - Redémarrage Apache
   hosts: web_servers
   tasks:
+    - name: Installation Apache
+      apt:
+        name: apache2
+        state: latest
     - name: Redémarrer Apache
       service:
         name: apache2
         state: restarted
+      register: apache_restat_output
+    - name: affiche retour tache 2
+      debug:
+        msg: apache_restat_output
 ```
+
+non car nginx utilise déjà le Port 80 et donc Apache n'a pas pu se lancer. Il faut diagnostiquer dans les logs pour voir ce conflit.
+Et quand une tâche échoue le reste des tâches s'intérompt. Raison pour laquelle il n'a pas exécuté la tâche 3
 
 </details>
 
+**Exercice 7.2:** Modifiez le playbook précedant pour :
+* Ignorer l'erreur en cas d'échec.
+* Et ajouter une 4ème tâche qui indique qu'il y'a un message d'erreur si la tâche 2 se s'exécute pas bien. (utiliser `debug` et la condition `when`)
 
-**Exercice 8:** Créez un playbook qui installe un serveur MySQL sur un groupe d'hôtes nommé "db_servers" avec une configuration spécifique.
+
+<details><summary> Correction 7:</summary>
+
+```yaml
+---
+- name: Exercice 7 - Redémarrage Apache
+  hosts: web_servers
+  tasks:
+    - name: Installation Apache
+      apt:
+        name: apache2
+        state: latest
+    - name: Redémarrer Apache
+      service:
+        name: apache2
+        state: restarted
+      register: apache_restat_output
+      ignore_errors: true
+    - name: affiche le retour de la tache 2
+      debug:
+        msg: '{{ apache_restat_output }}'
+    - name: Dire si la tâche a échouée
+      debug:
+        msg: "La tâche de redémarrage a échoué"
+      when:
+        - apache_restat_output.failed == true
+```
+
+non car nginx utilise déjà le Port 80. Il faut diagnostiquer dans les logs pour voir ce conflit.
+
+</details>
+
+**Exercice 8:** Créez un playbook qui installe un serveur MySQL sur un groupe d'hôtes nommé "db_servers" avec une configuration spécifique contenu dans un fichier `my.cnf` et le redémarer.
 
 
 <details><summary> Correction 8:</summary>
@@ -183,28 +237,51 @@ Créez ce fichier index qui contient un simple text html de votre choix
       apt:
         name: mysql-server
         state: present
+        update_cache: true
     - name: Copier le fichier de configuration MySQL
       copy:
         src: /chemin/vers/my.cnf
         dest: /etc/mysql/my.cnf
+    - name: redémarrer mysql
+      service:
+        name: mysql
+        state: restarted
 ```
 
 </details>
 
 
-**Exercice 9:** Créez un playbook qui crée un fichier de configuration à partir d'un modèle (template) et le déploie sur un groupe d'hôtes nommé "app_servers".
+**Exercice 9:** Créez un playbook qui crée un fichier de configuration nommé `/etc/app/app.conf` à partir d'un modèle (template) et le déploier sur le groupe d'hôtes nommé "web_servers". Faites en sorte que les valeurs mises entre `< >` soit automatiquement mise selon la machine sur laquelle la conf sera mise. (Ex: pour le node1, que l'IP soit l'IP du node1)
+
+```
+# Sample conf
+Adresse IP : <IP du Serveur>
+Nom du serveur : <Hostname>
+```
 
 
 <details><summary> Correction 9:</summary>
 
+Créer le template suivant
+
+```
+# Sample conf
+Adresse IP : {{ ansible_default_ipv4.address }}
+Nom du serveur : {{ ansible_hostname }}
+```
+
 ```yaml
 ---
 - name: Exercice 9 - Déploiement de configuration
-  hosts: app_servers
+  hosts: web_servers
   tasks:
+    - name: créer le répertoire /etc/app
+      file:
+        path: /etc/app
+        state: directory
     - name: Copier le fichier de configuration à partir d'un modèle
       template:
-        src: /chemin/vers/template.conf.j2
+        src: /lab/template.j2
         dest: /etc/app/app.conf
 ```
 
@@ -229,43 +306,14 @@ Créez ce fichier index qui contient un simple text html de votre choix
 </details>
 
 
-**Exercice 11:** Créez un playbook qui installe un serveur web Nginx sur un groupe d'hôtes nommé "web_servers" et configure un site web simple.
+**Exercice 11:** Créez un playbook qui crée un utilisateur "lab1" avec des privilèges sudo sur tous les hôtes distants.
 
 
 <details><summary> Correction 11:</summary>
 
 ```yaml
 ---
-- name: Exercice 11 - Installation de Nginx
-  hosts: web_servers
-  tasks:
-    - name: Installer Nginx
-      apt:
-        name: nginx
-        state: present
-    - name: Copier la configuration du site web
-      template:
-        src: /chemin/vers/nginx-site.conf.j2
-        dest: /etc/nginx/sites-available/my-site
-    - name: Activer le site web
-      command: ln -s /etc/nginx/sites-available/my-site /etc/nginx/sites-enabled/
-    - name: Redémarrer Nginx
-      service:
-        name: nginx
-        state: restarted
-```
-
-</details>
-
-
-**Exercice 12:** Créez un playbook qui crée un utilisateur "lab1" avec des privilèges sudo sur tous les hôtes distants.
-
-
-<details><summary> Correction 12:</summary>
-
-```yaml
----
-- name: Exercice 12 - Création d'utilisateur avec sudo
+- name: Exercice 11 - Création d'utilisateur avec sudo
   hosts: all
   tasks:
     - name: Créer un utilisateur
@@ -281,45 +329,35 @@ Créez ce fichier index qui contient un simple text html de votre choix
 </details>
 
 
-**Exercice 13:** Créez un playbook qui effectue une sauvegarde complète du répertoire "/var/www" sur un serveur distant et la stocke dans "/backup".
+**Exercice 12:** Créez un playbook qui effectue une sauvegarde complète du répertoire "/var/www" et la stocke dans le répertoire "/backup". Faite en sorte que le nom des archives créées contienne la date et l'heure exacte de la création de l'archive format : "var_www_archive_`YYYY-MM-DD_HH-mm-ss`.tar.gz"
 
 
-<details><summary> Correction 13:</summary>
+<details><summary> Correction 12:</summary>
 
 ```yaml
 ---
-- name: Exercice 13 - Sauvegarde du répertoire
-  hosts: serveur_de_sauvegarde
+- name: Exercice 12 - Sauvegarde du répertoire
+  hosts: web_servers
   tasks:
+    - name: Obtenir le temps présent
+      set_fact:
+        timestamp: "{{ ansible_date_time.date }}-{{ ansible_date_time.time | regex_replace(':', '-') }}"
     - name: Créer le répertoire de sauvegarde
       file:
         path: /backup
         state: directory
-    - name: Effectuer la sauvegarde à l'aide de tar
-      command: tar -cz ...
-```
-
-```yaml
----
-- name: Exercice 13 - Sauvegarde du répertoire
-  hosts: serveur_de_sauvegarde
-  tasks:
-    - name: Créer le répertoire de sauvegarde
-      file:
-        path: /backup
-        state: directory
-    - name: Sauvegarder le répertoire /var/www
+    - name:
       archive:
-        src: /var/www
-        dest: /backup/web-backup-{{ ansible_date_time.iso8601 }}.tar.gz
-        compression: gz
-
+        path: /var/www
+        dest: "/backup/var_www_archive_{{ timestamp }}.tar.gz"
+        format: gz
+        mode: '0644'
 ```
 
 </details>
 
 
-**Exercice 14:** Créez un playbook qui crée un utilisateur nommé "labuser2" sur tous les hôtes distants dont les carracteristiques sont les suivantes :
+**Exercice 13:** Créez un playbook qui crée un utilisateur nommé "labuser2" sur tous les hôtes distants dont les carracteristiques sont les suivantes :
 * uid : 2000
 * comment: "Utilisateur Lab 2"
 * appartenant au groupe secondaire : devops
@@ -332,7 +370,7 @@ Nous supposons que le group devops n'est pas encore créé. Inclure dans le play
 
 Pour l'instant créez avec la commande Ad-hoc le groupe `developpeurs`. Plus tard, nous verrons comment inclure des contrôles
 
-<details><summary> Correction 14:</summary>
+<details><summary> Correction 13:</summary>
 
 ```yaml
 ---

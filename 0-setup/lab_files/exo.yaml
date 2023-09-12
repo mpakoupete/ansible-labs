@@ -1,0 +1,9 @@
+---
+- name: Exercice 5 - Copie de fichier
+  hosts: all
+  become: true
+  tasks:
+    - name: Copier un fichier
+      copy:
+        src: /lab/index.html
+        dest: /var/www/html/

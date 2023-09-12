@@ -1,0 +1,18 @@
+---
+- name: Exercice 12 - Sauvegarde du répertoire
+  hosts: web_servers
+  tasks:
+    - name: Obtenir le temps présent
+      set_fact:
+        timestamp: "{{ ansible_date_time.date }}-{{ ansible_date_time.time | regex_replace(':', '-') }}"
+    - name: Créer le répertoire de sauvegarde
+      file:
+        path: /backup
+        state: directory
+    - name: 
+      archive:
+        path: /var/www 
+        dest: "/backup/var_www_archive_{{ timestamp }}.tar.gz"
+        format: gz
+        mode: '0644' 
+
