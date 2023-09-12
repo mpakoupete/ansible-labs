@@ -412,7 +412,7 @@ Créez la liste des utilisateurs suivants au format yaml dans un dictionnaire du
 * username: lab3; uid: 3003
 * username: lab4; uid: 3004
 
-<details><summary> User list:</summary>
+<details><summary>Correction Liste utilisateurs</summary>
 
 ```yaml
 ---
@@ -432,7 +432,7 @@ Créez la liste des utilisateurs suivants au format yaml dans un dictionnaire du
 Créer un fichier nommé `secret.yml` contenant une variable nommé `user_passwd : p@SSw0duser`
 Chiffrez le avec ansible-vault 
 
-<details><summary> Secret.yml:</summary>
+<details><summary>Correction Secret.yml:</summary>
 
 ```yaml
 ---
@@ -460,7 +460,7 @@ Créer un playbook qui importe les fichiers `liste_utilisateurs.yml` et `secret.
 * Les utilisateurs dont les UID sont inférieures à 3000 seront créés sur les hôtes appartenant au groupe `web_servers`
 * Et les utilisateurs dont les UID sont supérieurs à 3000 seront créés sur les hôtes appartenant au groupe `db_servers` 
 
-<details><summary> Secret.yml:</summary>
+<details><summary> Correction Playbook: </summary>
 
 ```yaml
 ---
