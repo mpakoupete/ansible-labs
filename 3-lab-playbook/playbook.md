@@ -401,3 +401,110 @@ Pour l'instant créez avec la commande Ad-hoc le groupe `developpeurs`. Plus tar
 
 </details>
 
+
+
+**Exercice 14:** 
+
+Créez la liste des utilisateurs suivants au format yaml dans un dictionnaire du nom de `users` et enregistrez le dans un fichier `liste_utilisateurs.yml`:
+
+* username: lab1; uid: 2001
+* username: lab2; uid: 2002
+* username: lab3; uid: 3003
+* username: lab4; uid: 3004
+
+<details><summary> User list:</summary>
+
+```yaml
+---
+ users:
+  - username: lab1
+    uid: 2001
+  - username: lab2
+    uid: 2002
+  - username: lab3
+    uid: 3003
+  - username: lab4
+    uid: 3004
+```
+
+</details>
+
+Créer un fichier nommé `secret.yml` contenant une variable nommé `user_passwd : p@SSw0duser`
+Chiffrez le avec ansible-vault 
+
+<details><summary> Secret.yml:</summary>
+
+```yaml
+---
+  user_passwd: p@SSw0duser
+  
+```
+
+```
+# chriffrer ==> entrez le mot de passe
+ansible-vault encrypt /lab/secret.yml
+
+# voir le contenu
+cat /lab/secret.yml
+
+# voir le contenu décrypté
+ansible-vault view /lab/secret.yml
+```
+
+</details>
+
+
+Créer un playbook qui importe les fichiers `liste_utilisateurs.yml` et `secret.yml` comme variable (utiliser `var_files`) et créer ces utilisateurs avec les caractériqtiques suivantes :
+* les noms et uid correspondent aux variables contenues dans `liste_utilisateurs.yml`
+* Le mot de passe de tous les utilisateurs est le même et qui est contenu dans  `secret.yml`
+* Les utilisateurs dont les UID sont inférieures à 3000 seront créés sur les hôtes appartenant au groupe `web_servers`
+* Et les utilisateurs dont les UID sont supérieurs à 3000 seront créés sur les hôtes appartenant au groupe `db_servers` 
+
+<details><summary> Secret.yml:</summary>
+
+```yaml
+---
+ - hosts : all
+   become : yes
+
+   vars_files :
+    - secret.yml
+    - liste_utilisateurs.yml
+
+   tasks :
+    - name : Création des utilisateurs sur Web_servers
+      user : 
+        name : "{{ item.username }}"
+        uid : "{{ item.uid }}"
+        password : "{{ user_passwd | password_hash('sha512') }}"
+      with_items :
+        - "{{ users }}"
+      when :
+        - inventory_hostname in groups['web_servers'] and item.uid|int < 3000
+      
+    - name : Création des utilisateurs sur db_servers
+      user : 
+        name : "{{ item.username }}"
+        uid : "{{ item.uid }}"
+        password : "{{ user_passwd | password_hash('sha512') }}"
+      with_items :
+        - "{{ users }}"
+      when :
+        - inventory_hostname in groups['db_servers'] and item.uid|int > 2999
+  
+```
+
+Afin de pouvoir exécuter notre ansible-playbook, nous devons lui fournir le mot de passe vault pour déchiffrer le le fichier secret.yml
+on met notre mot de passe de chiffrement dans un fichier
+```
+vim vault_password
+```
+
+
+Ensuite on ajoute cela comme argument à la commande
+
+```
+ansible-playbook /lab/exo14.yml --vault-password-file vault_password
+```
+
+</details>
