@@ -13,7 +13,7 @@ Ecrire un playbook qui fait une boucle sur ces 3 paquets et les supprime de tous
 ---
 - name: Suppression des paquets
   hosts: all
-  become: yes  # Use 'become' to execute with sudo or root privileges
+  become: yes
 
   vars:
     paquet_a_supprimer:
