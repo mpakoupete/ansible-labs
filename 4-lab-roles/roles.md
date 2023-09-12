@@ -54,7 +54,7 @@ node3
 
 ### création de tâches d'installation de Apache2
 
-Créer ces deux template suivants pour la configuration de notre serveur Apache2 et placez les dans un répertoire `template` que vous allez créer
+Créer ces deux template suivants pour la configuration de notre serveur Apache2 et placez les dans un répertoire `templates` que vous allez créer
 
 * Template 1 : `ports.conf.j2`
 ```
@@ -84,8 +84,8 @@ Listen {{ http_port }}
 Créez un playbook du nom de `installation_apache2.yml` qui :
 
 * Install apache2 à la dernière version
-* Place le template source `template/ports.conf.j2` à la destination suivante `/etc/apache2/ports.conf`. Chaque fois que ce fichier est modifié, emettre une notification `redemarrer apache` (utiliser le plugin `notify`)
-* Place le template `template/index.html.j2` à la destination suivante `/var/www/html/index.html`. Chaque fois que ce fichier est modifié également, emettre une notification `redemarrer apache` (utiliser le plugin `notify`)
+* Place le template source `templates/ports.conf.j2` à la destination suivante `/etc/apache2/ports.conf`. Chaque fois que ce fichier est modifié, emettre une notification `redemarrer apache` (utiliser le plugin `notify`)
+* Place le template `templates/index.html.j2` à la destination suivante `/var/www/html/index.html`. Chaque fois que ce fichier est modifié également, emettre une notification `redemarrer apache` (utiliser le plugin `notify`)
 * Démarre le service `apache2`
 * déclare ces 3 variables : `http_port: 8000`, `https_port: 4443`, `html_msg: "Hello Lab Orsys"`
 
@@ -130,7 +130,7 @@ Modifiez le playbook précédent pour ajouter un handler. Ce handler devra réag
 <details><summary>Correction</summary>
 
 ```yaml
-- hosts: webservers
+- hosts: web
   become: yes
 
   vars:
@@ -156,7 +156,7 @@ Modifiez le playbook précédent pour ajouter un handler. Ce handler devra réag
       - redemarrer apache
 
     - name: S'assuré que Apache est démarré
-      ervice:
+      service:
         name: apache2
         state: started
     
