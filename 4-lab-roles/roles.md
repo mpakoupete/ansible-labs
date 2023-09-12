@@ -223,12 +223,12 @@ Nous allons créer un playbook simple qui contient un play qui déploie notre r�
 
 ```yaml
 ---
-    - hosts: web
+  - hosts: web
     become: yes
     
     roles:
-        - apache2
+      - apache2
 
     tags:
-        web
+      web
 ```
