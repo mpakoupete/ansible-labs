@@ -1,5 +1,0 @@
----
-# defaults file for /lab/roles/apache2
-  http_port: 8000
-  https_port: 4443
-  html_msg: "Hello Lab Orsys"
