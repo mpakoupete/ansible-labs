@@ -36,15 +36,17 @@ python3 -m pip install --user ansible
 
 ## Configuration de base
 
-Dans le répertoire `/lab` créer un simple fichier `ansible.cfg` qui reprends les valeurs par défaut du fichier de configuration standard `/etc/ansible/ansible.cfg`
+Dans le répertoire personnel de l'utilisateur `vagrant`, créer un répertoire `lab`. Tout le reste des fichiers sera créé à l'intérieur.
+
+- Généré/créer le fichier de configuration `ansible.cfg` qui reprends les valeurs par défaut de la config ansible. _(sur une installation avec apt/yum le fichiers de configuration standard se trouve `/etc/ansible/ansible.cfg`)_
 
 Modifiez le fichier de configuration ansible que vous venez de créer avec les paramètres suivants :
 
-* Indiquer le chemin du fichier inventaire `/lab/inventory`
-* Indiquer le chemin des roles par défaut `/lab/roles`
+* Indiquer le chemin du fichier inventaire `/home/vagrant/lab/inventory`
+* Indiquer le chemin des roles par défaut `/home/vagrant/lab/roles`
 
-Créer le fichier `/lab/inventory` et le répertoire `/lab/roles`.
-Créer également le répertoire `/lab/playbooks`qui contiendra tous les playbook que nous allons créer
+Créer le fichier `/home/vagrant/lab/inventory` et le répertoire `/home/vagrant/lab/roles`.
+Créer également le répertoire `/home/vagrant/lab/playbooks`qui contiendra tous les playbook que nous allons créer
 
 Testez votre configuration ansible à l'aide de la commande suivante : 
 
@@ -54,13 +56,70 @@ ansible -m ping all
 
 ## Configuration des clé SSH - No password
 
-Créez une nouvelle paire de clés SSH qui sera utilisé pour s'authentifier au près des hôtes cibles
+Sur la machine de control `controller`, créez une nouvelle paire de clés SSH qui sera utilisé par l'utilisateur `vagrant` pour s'authentifier au près des hôtes cibles : `node1`, `node2`, `node3`
 
 ```bash
+# Generation de clé ssh
 ssh-keygen
 ```
 
-Création d'un nouvel utilisateur `"admin"` sur les hôtes distants servant d’administration
+Sur les hôtes cibles : `node1`, `node2`, `node3`, créez un nouvel utilisateur `"admin"` qui sera utiliser pour d’administration
+
+* Sur chaque hôte; créer manuellement un utilisateur `"admin"`
+
+```bash
+useradd -m "admin"
+
+# donnez un mot de passe (e.g. adminpass)
+passwd admin
+```
+
+* Ajouter à l'utilisateur `admin` les capacités **sudo**.
+
+```bash
+cat << _EOF > /etc/sudoers.d/admin
+admin         ALL=(ALL)       NOPASSWD:ALL
+_EOF
+# NOPASSWD est une indication pour ne pas demander de mot de passe à chaque élevation de privilège
+```
+
+Depuis le serveur `controller`, exportez votre clé SSH
+
+```bash
+ssh-copy-id admin@node1
+ssh-copy-id admin@node2
+ssh-copy-id admin@node3
+```
+
+Tester une commande Ad-Hoc Ansible simple (e.g. le Ping)
+
+```bash
+ansible all -u admin -m ping
+```
+
+Tester une commande à privilège avec l'escalade de privilège; on ne devrait plus vous demander aucun mot de passe : 
+
+```bash
+ansible all -u admin -b -m user -a "name=testuser state=present"
+```
+
+```bash
+ansible all -u admin -b -m user -a "name=testuser state=absent"
+```
+
+Modifiez à présent le fichier de configuration `ansible.cfg` pour que l'utilisateur par défaut soit `admin`. Faites le test
+
+```bash
+ansible all -m ping
+ansible all -b -m ping
+```
+
+<details><summary> Autre solution </summary>
+
+Dans un parc de dizaine, voir de centaines de serveurs il est plus judicieux de simplifier les étapes précendentes. On peut le faire de plusiseurs manières:
+
+- Lors de la création des hôtes cibles, créer un utilisateur `admin` et mettre dans le fichier `~/.ssh/authorized_keys` la clé ou les clés publics de/des administrateurs. _(la methode la plus judicieuse)_
+- Lors de la création des hôtes cibles, utiliser l'utilisateur par défaut `root` connaissant son mot de passe pour faire la configuration de l'utilisateur d'administration Ansible. Les commandes suivante montrent comment on peut le faire directement à partir de la machine `controller` sans passer serveur par serveur.
 
 ```bash
 ansible all -u root -m user -a "name=admin state=present"
@@ -87,3 +146,6 @@ ansible all -u admin -b -m user -a "name=testuser state=present"
 ```bash
 ansible all -u admin -b -m user -a "name=testuser state=absent"
 ```
+
+</details>
+

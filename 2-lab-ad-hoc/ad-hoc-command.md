@@ -11,14 +11,14 @@ Exemple :
 
 ```bash
 # ping du node 1
-$ ansible node1 -i /lab/inventory -m ping
+$ ansible node1 -m ping
 
 # si le fichier inventaire est renseigné dans le fichier ansible.cfg on peut se passer de le préciser
 $ ansible node1 -m ping
 $ ansible -m ping node1
 
 # Commande à privilège
-$ ansible all -i /lab/inventory -m file -a "path=/root/ansible_test state=directory" -b
+$ ansible all -m file -a "path=/root/ansible_test state=directory" -b
 ```
 
 **Exercice 1:** Exécutez une commande sur tous les hôtes distants pour obtenir leur date et heure actuelles.
@@ -26,7 +26,7 @@ $ ansible all -i /lab/inventory -m file -a "path=/root/ansible_test state=direct
 <details><summary> Correction 1:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m command -a "date"
+ansible all -m command -a "date"
 ```
 
 </details>
@@ -37,7 +37,7 @@ ansible all -i /lab/inventory -m command -a "date"
 <details><summary> Correction 2:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m command -a "free -m"
+ansible all -m command -a "free -m"
 ```
 
 </details>
@@ -48,7 +48,7 @@ ansible all -i /lab/inventory -m command -a "free -m"
 <details><summary> Correction 3:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m file -a "path=/tmp/ansible_test state=directory"
+ansible all -m file -a "path=/tmp/ansible_test state=directory"
 ```
 
 </details>
@@ -59,7 +59,7 @@ ansible all -i /lab/inventory -m file -a "path=/tmp/ansible_test state=directory
 <details><summary> Correction 4:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m apt -a "name=nginx state=present" -b
+ansible all -m apt -a "name=nginx state=present" -b
 ```
 
 </details>
@@ -70,7 +70,7 @@ ansible all -i /lab/inventory -m apt -a "name=nginx state=present" -b
 <details><summary> Correction 5:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m service -a "name=nginx state=restarted" -b
+ansible all -m service -a "name=nginx state=restarted" -b
 ```
 
 </details>
@@ -81,7 +81,7 @@ ansible all -i /lab/inventory -m service -a "name=nginx state=restarted" -b
 <details><summary> Correction 6:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m copy -a "content='Hello, Ansible!' dest=/tmp/hello.txt" -b
+ansible all -m copy -a "content='Hello, Ansible!' dest=/tmp/hello.txt" -b
 ```
 
 </details>
@@ -92,7 +92,7 @@ ansible all -i /lab/inventory -m copy -a "content='Hello, Ansible!' dest=/tmp/he
 <details><summary> Correction 7:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m user -a "name=ansible_user" -b
+ansible all -m user -a "name=ansible_user" -b
 ```
 
 </details>
@@ -103,7 +103,7 @@ ansible all -i /lab/inventory -m user -a "name=ansible_user" -b
 <details><summary> Correction 8:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m file -a "path=/tmp/ansible_test state=absent" -b
+ansible all -m file -a "path=/tmp/ansible_test state=absent" -b
 ```
 
 </details>
@@ -114,7 +114,7 @@ ansible all -i /lab/inventory -m file -a "path=/tmp/ansible_test state=absent" -
 <details><summary> Correction 9:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m lineinfile -a "path=/etc/ssh/sshd_config line='PasswordAuthentication yes'" -b
+ansible all -m lineinfile -a "path=/etc/ssh/sshd_config line='PasswordAuthentication yes'" -b
 ```
 
 </details>
@@ -125,7 +125,7 @@ ansible all -i /lab/inventory -m lineinfile -a "path=/etc/ssh/sshd_config line='
 <details><summary> Correction 10:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m apt -a "upgrade=dist" -b
+ansible all -m apt -a "upgrade=dist" -b
 ```
 
 </details>
@@ -136,7 +136,7 @@ ansible all -i /lab/inventory -m apt -a "upgrade=dist" -b
 <details><summary> Correction 11:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m user -a "name=webadmin createhome=yes" -b
+ansible all -m user -a "name=webadmin createhome=yes" -b
 ```
 
 </details>
@@ -147,7 +147,7 @@ ansible all -i /lab/inventory -m user -a "name=webadmin createhome=yes" -b
 <details><summary> Correction 12:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m copy -a "src=/path/to/index.html dest=/var/www/html/index.html" -b
+ansible all -m copy -a "src=/path/to/index.html dest=/var/www/html/index.html" -b
 ```
 
 </details>
@@ -160,7 +160,7 @@ et sur les hôtes du groupe web_servers créer un group `web_servers` pour les a
 
 
 ```bash
-vim /lab/inventory
+vim /home/vagrant/lab/inventory
 node3
 [web_servers]
 node1
@@ -180,7 +180,7 @@ ansible web_servers -m user -a "name=admin groups=web_servers" -b
 <details><summary> Correction 14:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m command -a "df -h"
+ansible all -m command -a "df -h"
 ```
 
 </details>
@@ -191,7 +191,7 @@ ansible all -i /lab/inventory -m command -a "df -h"
 <details><summary> Correction 15:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m file -a "src=/var/www/html/index.html dest=/var/www/html/latest state=link" -b
+ansible all -m file -a "src=/var/www/html/index.html dest=/var/www/html/latest state=link" -b
 ```
 
 </details>
@@ -202,7 +202,7 @@ ansible all -i /lab/inventory -m file -a "src=/var/www/html/index.html dest=/var
 <details><summary> Correction 16:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m user -a "name=admin append=yes groups=sudo" -b
+ansible all -m user -a "name=admin append=yes groups=sudo" -b
 ```
 
 </details>
@@ -213,7 +213,7 @@ ansible all -i /lab/inventory -m user -a "name=admin append=yes groups=sudo" -b
 <details><summary> Correction 17:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m command -a "reboot" -b
+ansible all -m command -a "reboot" -b
 ```
 
 </details>
@@ -224,7 +224,7 @@ ansible all -i /lab/inventory -m command -a "reboot" -b
 <details><summary> Correction 18:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m command -a "cat /etc/hostname"
+ansible all -m command -a "cat /etc/hostname"
 ```
 
 </details>
@@ -235,18 +235,7 @@ ansible all -i /lab/inventory -m command -a "cat /etc/hostname"
 <details><summary> Correction 19:</summary>
 
 ```bash
-ansible all -i /lab/inventory -m file -a "path=/var/www/html/logs state=directory" -b
-```
-
-</details>
-
-
-**Exercice 20:** Changez le mot de passe de l'utilisateur "ansible_user" sur tous les hôtes distants.
-
-<details><summary> Correction 20:</summary>
-
-```bash
-ansible all -i /lab/inventory -m user -a "name=ansible_user update_password=always" -b
+ansible all -m file -a "path=/var/www/html/logs state=directory" -b
 ```
 
 </details>
