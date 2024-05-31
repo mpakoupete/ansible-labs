@@ -18,4 +18,18 @@ touch /home/vagrant/.hushlogin
 
 sudo echo -e "192.168.56.20 controller.wizetraining.local controller\n192.168.56.21 node1.wizetraining.local node1\n192.168.56.22 node2.wizetraining.local node2\n192.168.56.23 node3.wizetraining.local node3" >> /etc/hosts
 
+# Add Ansible user account
+
+sudo useradd -m -s /bin/bash admin
+echo "admin:admin" | sudo chpasswd
+
+cat << _EOF | sudo tee /etc/sudoers.d/admin
+admin         ALL=(ALL)       NOPASSWD:ALL
+_EOF
+
+
+
+
+
+
 

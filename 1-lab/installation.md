@@ -34,19 +34,60 @@ Utilisez pip dans l'environnement Python que vous avez choisi pour installer le 
 python3 -m pip install --user ansible
 ```
 
+Ansible est bien installé mais les exécutables sont dans un répertoire spécifique `/home/vagrant/.local/bin` non répertoriés dans le `$PATH` de l'utilisateur.
+
+```bash
+$ ansible --version
+-bash: ansible: command not found
+```
+
+Modifiez la variable d'environnement `$PATH` d'une manière pérenne, modifiez le fichier `.bashrc` qui se trouve dans votre répertoire personnel.
+
+```bash
+$ echo 'export PATH=$PATH:$HOME/.local/bin' >> ~/.bashrc
+$ source .bashrc
+```
+
+Testez la bonne installation de Ansible : 
+
+```bash
+$ $ ansible --version
+ansible [core 2.16.7]
+  config file = None
+  configured module search path = ['/home/vagrant/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /home/vagrant/.local/lib/python3.10/site-packages/ansible
+  ansible collection location = /home/vagrant/.ansible/collections:/usr/share/ansible/collections
+  executable location = /home/vagrant/.local/bin/ansible
+  python version = 3.10.12 (main, Jun 11 2023, 05:26:28) [GCC 11.4.0] (/usr/bin/python3)
+  jinja version = 3.0.3
+  libyaml = True
+```
+
+
 ## Configuration de base
 
-Dans le répertoire personnel de l'utilisateur `vagrant`, créer un répertoire `lab`. Tout le reste des fichiers sera créé à l'intérieur.
+Dans le répertoire personnel de l'utilisateur `vagrant`, créer un répertoire `config`. Les fichiers de configuration ansible seront créés à l'intérieur.
 
-- Généré/créer le fichier de configuration `ansible.cfg` qui reprends les valeurs par défaut de la config ansible. _(sur une installation avec apt/yum le fichiers de configuration standard se trouve `/etc/ansible/ansible.cfg`)_
+```bash
+$ mkdir config
+```
 
-Modifiez le fichier de configuration ansible que vous venez de créer avec les paramètres suivants :
+- Généré/créer le fichier de configuration `ansible.cfg` dans le répertoire `config` qui reprends les valeurs par défaut de la config ansible. _(sur une installation avec apt/yum le fichiers de configuration standard se trouve `/etc/ansible/ansible.cfg`)_
 
-* Indiquer le chemin du fichier inventaire `/home/vagrant/lab/inventory`
-* Indiquer le chemin des roles par défaut `/home/vagrant/lab/roles`
 
-Créer le fichier `/home/vagrant/lab/inventory` et le répertoire `/home/vagrant/lab/roles`.
-Créer également le répertoire `/home/vagrant/lab/playbooks`qui contiendra tous les playbook que nous allons créer
+```bash
+$ cd config
+$ ansible-config init --disabled -t all > ansible.cfg 
+```
+
+
+Modifiez le fichier de configuration ansible que vous venez de créer/générer avec les paramètres suivants :
+
+* Indiquer le chemin du fichier inventaire `/home/vagrant/config/inventory` que vous devez créer
+* Indiquer le chemin des roles par défaut `/home/vagrant/config/roles` que vous devez créer également
+
+Créer le fichier `$HOME/config/inventory` et le répertoire `$HOME/config/roles`.
+Créer également le répertoire `/tp/playbooks`qui contiendra tous les playbook que nous allons créer
 
 Testez votre configuration ansible à l'aide de la commande suivante : 
 
@@ -63,32 +104,16 @@ Sur la machine de control `controller`, créez une nouvelle paire de clés SSH q
 ssh-keygen
 ```
 
-Sur les hôtes cibles : `node1`, `node2`, `node3`, créez un nouvel utilisateur `"admin"` qui sera utiliser pour d’administration
+Sur les hôtes cibles : `node1`, `node2`, `node3`,  l'utilisateur `"admin"` qui sera utiliser pour l’administration existe déjà. Exportez la clé ssh précedemment créée vers les 3 hôte cibles sur le compte `admin`.
 
-* Sur chaque hôte; créer manuellement un utilisateur `"admin"`
+PS : les capacités **sudo** ont déjà été accordées à l'utilisateur `admin` sur tous les hôtes cibles
 
-```bash
-useradd -m "admin"
-
-# donnez un mot de passe (e.g. adminpass)
-passwd admin
-```
-
-* Ajouter à l'utilisateur `admin` les capacités **sudo**.
+Depuis le serveur `controller` en tant que utilisateur `vagrant`, exportez votre clé SSH
 
 ```bash
-cat << _EOF > /etc/sudoers.d/admin
-admin         ALL=(ALL)       NOPASSWD:ALL
-_EOF
-# NOPASSWD est une indication pour ne pas demander de mot de passe à chaque élevation de privilège
-```
-
-Depuis le serveur `controller`, exportez votre clé SSH
-
-```bash
-ssh-copy-id admin@node1
-ssh-copy-id admin@node2
-ssh-copy-id admin@node3
+vagrant@controller:~$ ssh-copy-id admin@node1
+vagrant@controller:~$ ssh-copy-id admin@node2
+vagrant@controller:~$ ssh-copy-id admin@node3
 ```
 
 Tester une commande Ad-Hoc Ansible simple (e.g. le Ping)
