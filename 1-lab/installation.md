@@ -51,7 +51,7 @@ $ source .bashrc
 Testez la bonne installation de Ansible : 
 
 ```bash
-$ $ ansible --version
+$ ansible --version
 ansible [core 2.16.7]
   config file = None
   configured module search path = ['/home/vagrant/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
