@@ -1,0 +1,27 @@
+---
+- name: Création de l'utilisateur labuser
+  hosts: all
+  tasks:
+    - name: installation de pip
+      apt:
+        name: pip
+        update_cache: yes
+        state: latest
+      become: yes
+    - name: installation du module passlib
+      pip:
+        name: passlib
+      become: yes
+    - name: Créer le group
+      group:
+        name: developpeurs
+        state: present
+      become: yes
+    - name: Créer l'utilisateur labuser
+      user:
+        name: labuser
+        uid: 1999
+        comment: "Utilisateur Lab"
+        groups: developpeurs
+        password: "{{ 'labuser001' | password_hash('sha512', 'mysecretsalt') }}"
+      become: yes
