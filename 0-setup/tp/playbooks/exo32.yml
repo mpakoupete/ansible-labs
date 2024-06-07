@@ -23,5 +23,6 @@
         uid: 1999
         comment: "Utilisateur Lab"
         groups: developpeurs
-        password: "{{ 'labuser001' | password_hash('sha512', 'mysecretsalt') }}"
+        password: "labuser001"
+        # password: "{{ 'labuser001' | password_hash('sha512', 'mysecretsalt') }}"
       become: yes
