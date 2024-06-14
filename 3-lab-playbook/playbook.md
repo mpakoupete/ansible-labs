@@ -383,7 +383,7 @@ Nom du serveur : {{ ansible_hostname }}
 * uid : 2000
 * comment: "Utilisateur Lab 2"
 * appartenant au groupe secondaire : devops
-* mot de passe : labuser002
+* mot de passe : labuser002 (on utilisera le lookup [`password_hash`](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_filters.html#hashing-and-encrypting-strings-and-passwords) )
 
 Nous supposons que le group devops n'est pas encore créé. Inclure dans le playbook un controle qui :
 * tente de créer le groupe `devops` dont le gid est `1500`
