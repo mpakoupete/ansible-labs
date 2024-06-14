@@ -35,7 +35,7 @@ library=/home/vagrant/.ansible/plugins/modules:/usr/share/ansible/plugins/module
 
 * Retournez les informations de l'aéroport récupérées ou un message d'erreur si la requête échoue.
 
-## Utilisation du Module dans un Playbook:**
+## Utilisation du Module dans un Playbook
 
 * Créez un playbook Ansible dans le répertoire `playbook`.
 
@@ -45,7 +45,7 @@ library=/home/vagrant/.ansible/plugins/modules:/usr/share/ansible/plugins/module
 
 * Ajoutez une tâche supplémentaire pour extraire et afficher uniquement le nom de l'aéroport à partir de la variable `airport_info`.
 
-## Gestion des Erreurs:
+## Gestion des Erreurs
 
 * Testez votre module avec un code d'aéroport invalide pour vous assurer que les erreurs sont gérées correctement.
 * Modifiez le playbook pour afficher un message d'erreur personnalisé si le module échoue.
