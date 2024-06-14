@@ -1,0 +1,14 @@
+Alias /wordpress {{ wordpress_directory }}
+
+<Directory {{ wordpress_directory }}>
+  Options FollowSymlinks
+  AllowOverride All
+  Require all granted
+</Directory>
+
+<Directory {{ wordpress_directory }}/wp-content/plugins/akismet>
+  <FilesMatch "\.(php|txt)$">
+    Order Deny,Allow
+    Deny from all
+  </FilesMatch>
+</Directory>

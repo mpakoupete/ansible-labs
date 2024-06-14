@@ -1,0 +1,37 @@
+---
+galaxy_info:
+  role_name: wordpress
+  author: inmotionhosting
+  description: Modular Ansible Role for deploying and configuring WordPress
+  company: "InMotion Hosting"
+  license: GPLv3
+  min_ansible_version: "2.13"
+
+  platforms:
+    - name: EL
+      versions:
+        - "7"
+        - "8"
+        - "9"
+    - name: Debian
+      versions:
+        - bullseye
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+
+  galaxy_tags:
+    - wordpress
+    - lamp
+    - apache
+    - mysql
+    - php
+    - redis
+
+dependencies:
+  - inmotionhosting.apache
+  - inmotionhosting.mysql
+  - inmotionhosting.php_fpm
+  - inmotionhosting.nginx_proxy
+  - inmotionhosting.redis

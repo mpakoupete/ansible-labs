@@ -1,0 +1,12 @@
+---
+- name: Configure NGINX repository
+  ansible.builtin.yum_repository:
+    name: nginx
+    baseurl: http://nginx.org/packages/rhel/$releasever/$basearch/
+    description: NGINX repository
+    enabled: true
+    gpgcheck: true
+    gpgkey: https://nginx.org/keys/nginx_signing.key
+    mode: "0644"
+    module_hotfixes: true
+    state: present

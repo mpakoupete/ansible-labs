@@ -1,0 +1,54 @@
+---
+- name: Include facts
+  ansible.builtin.include_tasks: facts.yml
+  tags: siteurl
+
+- name: (Ubuntu) Update APT cache
+  ansible.builtin.apt:
+    force_apt_get: true
+    cache_valid_time: "3600"
+    state: present
+    update_cache: true
+  when: ansible_distribution == "Ubuntu"
+
+- name: Install Apache packages
+  ansible.builtin.package:
+    name: "{{ apache_packages }}"
+    state: present
+
+- name: Delete Apache "hello world" configuration
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  notify:
+    - Restart apache
+  with_items:
+    - "{{ apache_config_site_path }}/autoindex.conf"
+    - "{{ apache_config_site_path }}/welcome.conf"
+
+- name: Ensure Apache group exists
+  ansible.builtin.group:
+    name: "{{ apache_user }}"
+    state: present
+
+- name: Ensure Apache user exists
+  ansible.builtin.user:
+    name: "{{ apache_user }}"
+    state: present
+    group: "{{ apache_group }}"
+
+- name: Configure Apache
+  ansible.builtin.include_tasks: "configure/main.yml"
+
+- name: Include systemd restart configuration
+  ansible.builtin.include_tasks: systemd.yml
+  when: >-
+    ( apache_systemd_restart|default(False)
+    or systemd_restart|default(False) )
+    and systemd_restart_setting is defined
+
+- name: Start and enable Apache service
+  ansible.builtin.service:
+    name: "{{ apache_daemon }}"
+    state: started
+    enabled: true

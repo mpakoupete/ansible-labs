@@ -1,0 +1,122 @@
+# {{ template_destpath }}
+# {{ ansible_managed }}
+
+user                        {{ nginx_user }} {{ nginx_group }};
+error_log                   {{ nginx_error_log }};
+pcre_jit                    on;
+pid                         {{ nginx_pid }};
+worker_rlimit_nofile        {{ nginx_worker_rlimit_nofile }};
+{% if ansible_distribution_major_version is version('9', '>=') %}
+worker_cpu_affinity         {{ nginx_worker_processes }};
+{% endif %}
+worker_processes            {{ nginx_worker_processes }};
+{% if (ansible_distribution == "Ubuntu"
+    and ansible_distribution_version is version('16.04', '=='))
+    or
+    (ansible_distribution == "Debian"
+    and ansible_distribution_major_version is version('9', '<=') ) %}
+{% else %}
+worker_shutdown_timeout     {{ nginx_worker_shutdown_timeout }};
+{% endif %}
+
+include                     {{ nginx_module_includes }};
+
+events {
+    worker_connections      {{ nginx_worker_connections }};
+    multi_accept            {{ "on" if nginx_multi_accept | bool else "off" }};
+}
+
+http {
+    # Logging
+    log_format              main {{ nginx_log_format_main }};
+    access_log              {{ nginx_access_log }} main;
+
+    # Proxy
+    include                 {{ nginx_proxy_includes }};
+
+    # Mimetypes
+    include                 {{ nginx_mime_includes }};
+    default_type            application/octet-stream;
+
+    # Trusted Proxies
+    include                 {{ nginx_trusted_proxies_includes }};
+
+    # Connection
+    disable_symlinks        if_not_owner;
+    keepalive_requests      {{ nginx_keepalive_requests }};
+    keepalive_timeout       {{ nginx_keepalive_timeout }};
+    reset_timedout_connection {{ "on" if nginx_reset_timedout_connection | bool else "off" }};
+    sendfile                {{ "on" if nginx_sendfile | bool else "off" }};
+    server_names_hash_bucket_size 128;
+    tcp_nodelay             {{ "on" if nginx_tcp_nodelay | bool else "off" }};
+    tcp_nopush              {{ "on" if nginx_tcp_nopush | bool else "off" }};
+
+    # Client
+    client_body_buffer_size {{ nginx_client_body_buffer_size }};
+    client_header_buffer_size {{ nginx_client_header_buffer_size }};
+    client_max_body_size    {{ nginx_client_max_body_size }};
+
+    
+    # Caching
+    etag                    {{ "on" if nginx_etag | bool else "off" }};
+    ssi                     {{ "on" if nginx_ssi | bool else "off" }};
+
+    open_file_cache         max={{ nginx_open_file_cache_max }}
+                            inactive={{ nginx_open_file_cache_inactive }};
+    open_file_cache_valid   {{ nginx_open_file_cache_valid }};
+    open_file_cache_min_uses {{ nginx_open_file_cache_min_uses }};
+    open_file_cache_errors  {{ "on" if nginx_open_file_cache_errors | bool else "off" }};
+
+    # Compression
+    gzip                    {{ "on" if nginx_gzip_enabled | bool else "off" }};
+    gzip_buffers            16 8k;
+    gzip_comp_level         {{ nginx_gzip_comp_level }};
+    gzip_min_length         {{ nginx_gzip_min_length }};
+    gzip_proxied            expired no-cache no-store
+                            private no_last_modified no_etag auth;
+    gzip_types              application/atom+xml
+                            application/javascript
+                            application/json
+                            application/ld+json
+                            application/manifest+json
+                            application/rss+xml
+                            application/vnd.geo+json
+                            application/vnd.ms-fontobject
+                            application/x-font-ttf
+                            application/x-web-app-manifest+json
+                            application/xhtml+xml
+                            application/xml
+                            font/opentype
+                            image/bmp
+                            image/svg+xml
+                            image/x-icon
+                            text/cache-manifest
+                            text/css
+                            text/plain
+                            text/vcard
+                            text/vnd.rim.location.xloc
+                            text/vtt
+                            text/x-component
+                            text/x-cross-domain-policy;
+    gzip_vary               on;
+
+{% if nginx_ratelimit is defined and nginx_ratelimit > 0 and nginx_ratelimit_paths is defined and nginx_ratelimit_paths | length > 0 %}
+    # Ratelimit
+    limit_req_zone          $binary_remote_addr
+                            zone={{ nginx_ratelimit_zone }}:1m
+                            rate={{ nginx_ratelimit }}r/s;
+
+{% endif %}
+    # SSL
+    ssl_ciphers             {{ nginx_ssl_ciphers|join(':') }};
+    ssl_ecdh_curve          secp384r1;
+{% if dh_path is defined and dh_path | length > 0 %}
+    ssl_dhparam             {{ dh_path }};
+{% endif %}
+    ssl_prefer_server_ciphers on;
+    ssl_protocols           {{ nginx_ssl_protocols|join(' ') }};
+    ssl_session_cache       {{ nginx_ssl_session_cache }};
+
+    # Site Includes
+    include                 {{ nginx_site_includes }};
+}

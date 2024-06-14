@@ -1,0 +1,20 @@
+# {{ template_destpath }}
+# {{ ansible_managed }}
+
+# event MPM: Multi-Processing Module implementing a hybrid
+# multi-threaded multi-process web server
+
+{% if ansible_os_family != "Debian" %}
+LoadModule mpm_event_module {{ apache_modules_path }}/mod_mpm_event.so
+{% endif %}
+
+<IfModule mpm_event_module>
+    ServerLimit             {{ (mpm_conf_max_request_workers | int / 25 ) | int }}
+    StartServers            5
+    MinSpareThreads         75
+    MaxSpareThreads         250
+    ThreadLimit             64
+    ThreadsPerChild         25
+    MaxRequestWorkers       {{ mpm_conf_max_request_workers }}
+    MaxConnectionsPerChild  10000
+</IfModule>

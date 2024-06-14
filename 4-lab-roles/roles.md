@@ -232,3 +232,51 @@ Nous allons créer un playbook simple qui contient un play qui déploie notre r�
   tags:
     - web
 ```
+
+### Utilisation d'un role existant
+
+#### Role mysql
+
+Télécharger le role [geerlingguy.mysql](https://galaxy.ansible.com/ui/standalone/roles/geerlingguy/mysql/) et le placer dans le répertoire `/tp/roles`
+
+```bash
+ansible-galaxy role install geerlingguy.mysql -p /tp/roles/
+```
+
+* Lister le contenu du répertoire `/tp/roles`; pourquoi avons nous 2 roles ?
+
+Explorer le contenu des deux roles
+
+Créez un playbook qui install ce role sur la cible `db` qui peut être le node3 avec les variables ajustées selon le fait que nous voulons connecter une application WordPress installée sur le node2 à la base de données.
+
+<details><summary>Correction</summary>
+
+```yaml
+- hosts: db
+
+  vars:
+    mysql_root_password: root
+    mysql_databases:
+      - name: wordpress
+    mysql_users:
+      - name: wordpress
+        host: '%'
+        password: wordpress
+        priv: 'wordpress.*:ALL'
+
+  roles:
+    - role: geerlingguy.mysql
+      become: yes
+```
+
+</details>
+
+Tester la conectivité depuis le controller
+
+```bash
+sudo apt-get update && sudo apt-get install mysql-client
+mysql -u wordpress -p -h node3
+
+mysql> show databases;
+```
+

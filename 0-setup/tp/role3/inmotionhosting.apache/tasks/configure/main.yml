@@ -1,0 +1,41 @@
+---
+- name: Assign Apache to specified user in config
+  ansible.builtin.lineinfile:
+    path: "{{ apache_config }}"
+    regexp: "^User "
+    line: "User {{ apache_user }}"
+
+- name: Assign Apache to specified group in config
+  ansible.builtin.lineinfile:
+    path: "{{ apache_config }}"
+    regexp: "^Group "
+    line: "Group {{ apache_group }}"
+
+- name: Configure Apache ({{ ansible_os_family }})
+  ansible.builtin.include_tasks: "configure/{{ ansible_os_family | lower }}.yml"
+
+- name: Configure httpd mpm module
+  ansible.builtin.template:
+    src: etc/httpd/modules.d/00-mpm.conf.j2
+    dest: "{{ apache_modules_config_path }}/00-mpm.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Restart apache
+
+- name: Create Apache /server-status config
+  ansible.builtin.template:
+    src: etc/httpd/conf.d/status.conf.j2
+    dest: "{{ apache_config_site_path }}/status.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Restart apache
+
+- name: Set Apache Timeout Directive
+  ansible.builtin.lineinfile:
+    path: "{{ apache_config }}"
+    regexp: '^Timeout\s+\d+'
+    line: "Timeout {{ apache_timeout }}"

@@ -1,0 +1,45 @@
+; {{ template_destpath }}
+; {{ ansible_managed }}
+; tags: site.conf.j2
+
+[{{ site_domain | replace(".", "_")}}]
+user = {{ system_user }}
+group = {{ system_user }}
+chdir = /home/{{ system_user }}
+
+listen = {{ php_fpm_socket_path }}
+listen.allowed_clients = 127.0.0.1
+listen.owner = {{ apache_user }}
+listen.group = {{ apache_group }}
+listen.mode = 0660
+
+catch_workers_output = {{ 'yes' if php_catch_workers_output | bool else 'no' }}
+
+php_admin_flag[allow_url_fopen] = {{ 'on' if php_allow_url_fopen | bool else 'off' }}
+php_admin_flag[allow_url_include] = {{ 'on' if php_allow_url_include | bool else 'off' }}
+php_admin_flag[log_errors] = on
+
+php_admin_value[doc_root] = "{{ wp_system_path }}"
+
+php_admin_value[disable_functions] = {{ php_disable_functions }}
+php_admin_value[error_log] = {{ php_fpm_site_errorlog }}
+
+php_value[opcache.file_cache] = /var/lib/php/opcache
+php_value[session.save_handler] = files
+php_value[session.save_path] = {{ php_conf_session_save_path }}
+php_value[soap.wsdl_cache_dir] = /var/lib/php/wsdlcache
+
+pm = dynamic
+pm.start_servers = {{ ((ansible_memtotal_mb / php_proc_mem | float * children_buffer | float ) / 3) | round(0, "ceil") | int }}
+pm.min_spare_servers = {{ ((ansible_memtotal_mb / php_proc_mem | float  * children_buffer | float ) / 3) | round(0, "ceil") | int }}
+pm.max_spare_servers = {{ ((ansible_memtotal_mb / php_proc_mem | float  * children_buffer | float + ansible_memtotal_mb / php_proc_mem | float  * children_buffer | float / 3) / 2) | round(0, "ceil") | int }}
+pm.max_children = {{ (ansible_memtotal_mb / php_proc_mem | float * children_buffer | float ) | round(0, "ceil") | int }}
+pm.max_requests = 200
+pm.process_idle_timeout = 10s
+pm.status_path = /status
+ping.path = /ping
+
+security.limit_extensions = .phtml .php .php3 .php4 .php5 .php6 .php7 .php8
+
+request_slowlog_timeout = {{ php_request_slowlog_timeout }}
+slowlog = {{ php_fpm_slowlog }}

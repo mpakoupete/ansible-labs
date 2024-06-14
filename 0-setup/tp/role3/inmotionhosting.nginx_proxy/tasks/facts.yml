@@ -1,0 +1,88 @@
+---
+- name: Include Debian vars
+  ansible.builtin.include_vars: "debian.yml"
+  when: ansible_os_family|lower == "debian"
+
+# These lists are variables required for templating.
+- name: Set lists of required variables
+  ansible.builtin.set_fact:
+    nginx_required_strings:
+      - nginx_access_log
+      - nginx_cache_inactive
+      - nginx_cache_name
+      - nginx_error_log
+      - nginx_log_format_main
+      - nginx_mime_includes
+      - nginx_module_includes
+      - nginx_open_file_cache_inactive
+      - nginx_open_file_cache_valid
+      - nginx_pid
+      - nginx_proxy_buffer_size
+      - nginx_proxy_busy_buffers_size
+      - nginx_proxy_cache_key
+      - nginx_proxy_includes
+      - nginx_site_includes
+      - nginx_ssl_session_cache
+      - nginx_trusted_proxies_includes
+      - nginx_worker_processes
+
+- name: Check required NGINX variables (strings)
+  ansible.builtin.fail:
+    msg: |
+      Invalid value for variable for '{{ item }}': {{ lookup('vars', item) }}
+
+      Supported types  : String
+      Supported values : Any non-null string
+  when: >-
+    lookup('vars', item) is not string
+    or lookup('vars', item) == 0
+  with_items: "{{ nginx_required_strings }}"
+
+- name: (Debian) Handle SSL errata
+  ansible.builtin.set_fact:
+    nginx_ssl_protocols:
+      - TLSv1.2
+  when: >-
+    (ansible_distribution == "Ubuntu"
+    and ansible_distribution_version is version('16.04', '=='))
+    or
+    (ansible_distribution == "Debian"
+    and ansible_distribution_version is version('9', '=='))
+
+- name: Add NGINX to Let's Encrypt services
+  ansible.builtin.set_fact:
+    certbot_stop_services: "{{ certbot_stop_services + [nginx_daemon] }}"
+  when:
+    - use_letsencrypt is defined
+    - use_letsencrypt
+    - certbot_stop_services is defined
+    - nginx_daemon not in certbot_stop_services
+
+- name: Initialize Let's Encrypt services with NGINX
+  ansible.builtin.set_fact:
+    certbot_stop_services:
+      - "{{ nginx_daemon }}"
+  when:
+    - use_letsencrypt is defined
+    - use_letsencrypt
+    - certbot_stop_services is not defined
+
+- name: Check variable 'systemd_restart_setting'
+  ansible.builtin.fail:
+    msg: |
+      Invalid value for variable 'systemd_restart_setting': '{{ systemd_restart_setting }}'
+
+      Supported types  : String
+      Supported values : "no", "on-success", "on-failure", "on-abnormal",
+                         "on-watchdog", "on-abort", "always"
+  failed_when: >-
+    systemd_restart_setting not in
+    ['no', 'on-success', 'on-failure', 'on-abnormal',
+    'on-watchdog', 'on-abort', 'always']
+    or systemd_restart_setting is not string
+    or systemd_restart_setting == 0
+  when: >-
+    (nginx_systemd_restart is defined
+    and nginx_systemd_restart)
+    or (systemd_restart is defined
+    and systemd_restart)
