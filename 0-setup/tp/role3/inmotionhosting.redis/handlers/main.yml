@@ -1,8 +1,0 @@
----
-# handlers file for inmotion.redis
-
-- name: Restart redis
-  ansible.builtin.systemd:
-    daemon_reload: true
-    name: "{{ redis_daemon }}"
-    state: restarted
