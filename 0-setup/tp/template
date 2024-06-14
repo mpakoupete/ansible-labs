@@ -1,0 +1,3 @@
+# Sample conf
+Adresse IP : {{ ansible_default_ipv4.address }}
+Nom du serveur : {{ ansible_hostname }}

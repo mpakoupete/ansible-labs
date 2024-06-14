@@ -1,0 +1,13 @@
+- hosts: node1
+  gather_facts: no
+  tasks:
+    - name: Get airport information
+      get_airport_info:
+        airport_code: "KMCI"
+      register: airport_info
+    - name: Set fact for the first airport name
+      set_fact:
+        first_airport_name: "{{ airport_info.info[0].name }}"
+    - name: Print the first airport name
+      debug:
+        var: first_airport_name
