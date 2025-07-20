@@ -89,27 +89,9 @@ Pour l'instant créez avec la commande Ad-hoc le groupe `developpeurs`. Plus tar
         password: "{{ 'labuser001' | password_hash('sha512', 'mysecretsalt') }}"
 ```
 
-Si vous avez une erreur au sujet du `passlib` , assurez vous d'installer le module python `passlib` en ajoutant les 2 tâches suivantes : 
+Si vous avez une erreur au sujet du `passlib` , assurez vous d'installer le module python `passlib` sur la machine `controller` à partir de laquelle vous exécutez `ansible` : `sudo apt-get install python3-passlib` ou l'installation via Pip:
 * installation de `pip`, le gestionnaire de paquets python
 * installation de `passlib`
-
-```yaml
-    - name: installation de pip
-      apt:
-        name: pip
-        update_cache: yes
-        state: latest
-      become: yes
-    - name: installation du module passlib
-      pip:
-        name: passlib
-      become: yes
-    - name: Créer le group
-      group:
-        name: developpeurs
-        state: present
-      become: yes
-```
 
 </details>
 
